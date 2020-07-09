@@ -30,19 +30,33 @@ const Blog = (props) => {
     }
   }
 
+  const confirmDelete = async () => {
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.name}?`)) {
+      try {
+        blogService.del(blog.id)
+      } catch (e) {
+        console.error(e.message)
+      }
+    }
+  }
+
   return (
     <div style={blogStyle}>
       <div onClick={toggleVisibility}>
         <strong>{blog.title}</strong>, by {blog.author}
       </div>
       <div style={hideWhenVisible}>
-          <button onClick={toggleVisibility}>View</button>
+        <button onClick={toggleVisibility}>View</button>
       </div>
       <div style={showWhenVisible}>
-          <p>{blog.url}</p>
-          <p>Likes: {blog.likes} <button onClick={handleLike}>Like</button></p>
-          {blog.user !== undefined && <p>{blog.user.username}</p>}
         <button onClick={toggleVisibility}>Hide</button>
+        <p>{blog.url}</p>
+        <p>Likes: {blog.likes} <button onClick={handleLike}>Like</button></p>
+        {blog.user !== undefined && <p>{blog.user.username}</p>}
+        {blog.user !== undefined &&
+          blog.user.username === props.user.username &&
+          <button onClick={confirmDelete}>Remove</button>
+        }
       </div>
     </div>
   )

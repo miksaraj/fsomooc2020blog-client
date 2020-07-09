@@ -3,13 +3,12 @@ import BlogList from './BlogList'
 import NewBlogForm from './NewBlogForm'
 import Togglable from './Togglable'
 
-const BlogView = (props) => {
+const BlogView = React.forwardRef((props, ref) => {
     const {
         user,
         blogs,
         logout,
-        createBlog,
-        ref
+        createBlog
     } = props
 
     return (
@@ -22,9 +21,9 @@ const BlogView = (props) => {
             <Togglable buttonLabel="New blog" ref={ref}>
                 <NewBlogForm createBlog={createBlog} />
             </Togglable>
-            <BlogList blogs={blogs} />
+            <BlogList blogs={blogs} user={user} />
         </div>
     )   
-}
+})
 
 export default BlogView
