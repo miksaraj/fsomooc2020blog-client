@@ -1,6 +1,7 @@
 import React from 'react'
 import BlogList from './BlogList'
 import NewBlogForm from './NewBlogForm'
+import Togglable from './Togglable'
 
 const BlogView = (props) => {
     const {
@@ -19,11 +20,13 @@ const BlogView = (props) => {
                 <p>{user.name} logged in</p>
                 <button onClick={logout}>Logout</button>
             </div>
-            <NewBlogForm
-                newBlog={newBlog}
-                submitBlog={submitBlog}
-                handleChange={handleChange}
-            />
+            <Togglable buttonLabel="New blog">
+                <NewBlogForm
+                    newBlog={newBlog}
+                    submitBlog={submitBlog}
+                    handleChange={handleChange}
+                />
+            </Togglable>
             <BlogList blogs={blogs} />
         </div>
     )   
