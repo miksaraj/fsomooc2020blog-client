@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import BlogView from './components/BlogView'
 import LoginForm from './components/LoginForm'
 import Notification from './components/Notification'
@@ -7,16 +7,10 @@ import loginService from './services/login'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState('')
-  const [pwd, setPwd] = useState('')
   const [user, setUser] = useState(null)
   const [alertMessage, setAlertMessage] = useState(null)
   const [alertType, setAlertType] = useState('')
-  const [newBlog, setNewBlog] = useState({
-    title: '',
-    author: '',
-    url: ''
-  })
+  const blogFormRef = useRef()
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -33,19 +27,14 @@ const App = () => {
     }
   }, [])
 
-  const handleLogin = async (event) => {
-    event.preventDefault()
+  const login = async (userObj) => {
     try {
-      const user = await loginService.login({
-        username, pwd
-      })
+      const user = await loginService.login(userObj)
       window.localStorage.setItem(
         'loggedBlogappUser', JSON.stringify(user)
       )
       blogService.setToken(user.token)
       setUser(user)
-      setUsername('')
-      setPwd('')
     } catch (e) {
       setAlertMessage('Error: invalid credentials.')
       setAlertType('error')
@@ -56,38 +45,18 @@ const App = () => {
     }
   }
 
-  const handleUsernameChange = (event) => {
-    setUsername(event.target.value)
-  }
-
-  const handlePwdChange = (event) => {
-    setPwd(event.target.value)
-  }
-
   const handleLogout = () => {
     window.localStorage.removeItem('loggedBlogappUser')
     setUser(null)
   }
 
-  const handleChange = (event) => {
-    const { name, value } = event.target
-    setNewBlog(prevState => ({
-      ...prevState, [name]: value
-    }))
-  }
-
-  const handleBlogSubmit = async (event) => {
-    event.preventDefault()
+  const createBlog = async (blogObj) => {
     try {
-      const title = newBlog.title
-      const author = newBlog.author
-      const data = await blogService.create(newBlog)
+      blogFormRef.current.toggleVisibility()
+      const title = blogObj.title
+      const author = blogObj.author
+      const data = await blogService.create(blogObj)
       setBlogs(blogs.concat(data))
-      setNewBlog({
-        title: '',
-        author: '',
-        url: ''
-      })
       setAlertMessage(`New blog ${title} by ${author} added!`)
       setAlertType('success')
       setTimeout(() => {
@@ -108,20 +77,13 @@ const App = () => {
     <div>
       <Notification message={alertMessage} type={alertType} />
       {user === null ?
-        <LoginForm
-          handleLogin={handleLogin}
-          username={username}
-          usernameOnChange={handleUsernameChange}
-          pwd={pwd}
-          pwdOnChange={handlePwdChange}
-        /> :
+        <LoginForm login={login} /> :
         <BlogView
           user={user}
           blogs={blogs}
           logout={handleLogout}
-          newBlog={newBlog}
-          submitBlog={handleBlogSubmit}
-          handleChange={handleChange}
+          createBlog={createBlog}
+          ref={blogFormRef}
         />
       }
     </div>

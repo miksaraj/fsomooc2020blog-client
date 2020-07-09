@@ -8,9 +8,8 @@ const BlogView = (props) => {
         user,
         blogs,
         logout,
-        newBlog,
-        submitBlog,
-        handleChange,
+        createBlog,
+        ref
     } = props
 
     return (
@@ -20,12 +19,8 @@ const BlogView = (props) => {
                 <p>{user.name} logged in</p>
                 <button onClick={logout}>Logout</button>
             </div>
-            <Togglable buttonLabel="New blog">
-                <NewBlogForm
-                    newBlog={newBlog}
-                    submitBlog={submitBlog}
-                    handleChange={handleChange}
-                />
+            <Togglable buttonLabel="New blog" ref={ref}>
+                <NewBlogForm createBlog={createBlog} />
             </Togglable>
             <BlogList blogs={blogs} />
         </div>
