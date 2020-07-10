@@ -20,11 +20,13 @@ describe('<Blog />', () => {
 		id: '5f05ba80b8c22607c7a05e6e'
 	}
 
+	const mockHandler = jest.fn()
+
 	let component
 
 	beforeEach(() => {
 		component = render(
-			<Blog blog={blog} user={user} />
+			<Blog blog={blog} user={user} handleLike={mockHandler} />
 		)
 	})
 
@@ -45,5 +47,18 @@ describe('<Blog />', () => {
 
 		const div = component.container.querySelector('.blogExtra')
 		expect(div).not.toHaveStyle('display: none')
+	})
+
+	// FIXME: curiously the test doesn't pass even when the debugger tells me
+	// that the event is fired twice and the component has the correct handler
+	test('clicking the like button twice calls the event handler twice', async () => {
+		fireEvent.click(component.getByText('View'))
+
+		const likeBtn = component.getByText('Like')
+		for (let i = 0; i < 2; i++) {
+			fireEvent.click(likeBtn)
+		}
+
+		expect(mockHandler.mock.calls).toHaveLength(2)
 	})
 })
