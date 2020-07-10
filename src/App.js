@@ -13,9 +13,13 @@ const App = () => {
 	const blogFormRef = useRef()
 
 	useEffect(() => {
-		blogService.getAll().then(blogs =>
+		blogService.getAll().then(blogs => {
+			blogs = blogs.sort((a, b) =>
+				(a.likes > b.likes) ? -1 : (a.likes === b.likes) ?
+					((a.title > b.title) ? 1 : -1) : 1
+			)
 			setBlogs(blogs)
-		)
+		})
 	}, [])
 
 	useEffect(() => {
@@ -52,12 +56,32 @@ const App = () => {
 
 	const createBlog = async (blogObj) => {
 		try {
-			blogFormRef.current.toggleVisibility()
 			const title = blogObj.title
 			const author = blogObj.author
 			const data = await blogService.create(blogObj)
 			setBlogs(blogs.concat(data))
 			setAlertMessage(`New blog ${title} by ${author} added!`)
+			setAlertType('success')
+			blogFormRef.current.toggleVisibility()
+			setTimeout(() => {
+				setAlertMessage(null)
+				setAlertType('')
+			}, 5000)
+		} catch (e) {
+			setAlertMessage(`Error: ${e.message}`)
+			setAlertType('error')
+			setTimeout(() => {
+				setAlertMessage(null)
+				setAlertType('')
+			}, 5000)
+		}
+	}
+
+	const removeBlog = async (blog) => {
+		try {
+			await blogService.del(blog.id)
+			setBlogs([...blogs].filter(b => b.id !== blog.id))
+			setAlertMessage(`Blog ${blog.title} by ${blog.author} removed!`)
 			setAlertType('success')
 			setTimeout(() => {
 				setAlertMessage(null)
@@ -83,6 +107,7 @@ const App = () => {
 					blogs={blogs}
 					logout={handleLogout}
 					createBlog={createBlog}
+					removeBlog={removeBlog}
 					ref={blogFormRef}
 				/>
 			}

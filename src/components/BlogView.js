@@ -1,14 +1,15 @@
-import React from 'react'
+import React, { forwardRef } from 'react'
 import BlogList from './BlogList'
 import NewBlogForm from './NewBlogForm'
 import Togglable from './Togglable'
 
-const BlogView = React.forwardRef((props, ref) => {
+const BlogView = forwardRef((props, ref) => {
 	const {
 		user,
 		blogs,
 		logout,
-		createBlog
+		createBlog,
+		removeBlog
 	} = props
 
 	return (
@@ -21,7 +22,11 @@ const BlogView = React.forwardRef((props, ref) => {
 			<Togglable buttonLabel="New blog" ref={ref}>
 				<NewBlogForm createBlog={createBlog} />
 			</Togglable>
-			<BlogList blogs={blogs} user={user} />
+			<BlogList
+				blogs={blogs}
+				user={user}
+				removeBlog={removeBlog}
+			/>
 		</div>
 	)
 })

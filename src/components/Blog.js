@@ -13,6 +13,7 @@ const Blog = (props) => {
 		borderWidth: 1,
 		marginBottom: 5
 	}
+	const removeBlog = props.removeBlog
 
 	const toggleVisibility = () => {
 		setVisible(!visible)
@@ -32,11 +33,7 @@ const Blog = (props) => {
 
 	const handleRemove = async () => {
 		if (window.confirm(`Remove blog ${blog.title} by ${blog.name}?`)) {
-			try {
-				await blogService.del(blog.id)
-			} catch (e) {
-				console.error(e.message)
-			}
+			removeBlog(blog)
 		}
 	}
 
@@ -52,9 +49,11 @@ const Blog = (props) => {
 				<button onClick={toggleVisibility}>Hide</button>
 				<p>{blog.url}</p>
 				<p>Likes: {blog.likes} <button onClick={handleLike}>Like</button></p>
-				{blog.user !== undefined && <p>{blog.user.username}</p>}
-				{blog.user !== undefined &&
-					blog.user.username === props.user.username &&
+				{blog.user !== undefined && blog.user !== null &&
+					<p>{blog.user.name}</p>
+				}
+				{blog.user !== undefined && blog.user !== null &&
+					blog.user.name === props.user.name &&
 					<button onClick={handleRemove}>Remove</button>
 				}
 			</div>
